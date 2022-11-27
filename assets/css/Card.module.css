@@ -1,0 +1,66 @@
+@font-face {
+    font-family: 'Lexend';
+    src: url('../font/lexend/Lexend-Regular.ttf') format('truetype');
+    font-weight: regular;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Lexend';
+    src: url('../font/lexend/Lexend-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: bold;
+}
+
+.Card {
+    position: relative;
+    background-color: rgb(217, 217, 217);
+    /* border: 15px solid rgb(200, 200, 200); */
+    border-radius: 16px;
+    aspect-ratio: 1 / 1.37;
+    height: 100%;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.Card > div {
+    display: flex;
+    width: calc(100% - 25px);
+    height: calc(100% - 25px);
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: white;
+    border-radius: 16px;
+}
+
+.CardNumber {
+    --textSize: 35px;
+    display: flex;
+    width: 100%;
+    height: var(--textSize);
+    line-height: var(--textSize);
+    color: black;
+    font-family: 'Lexend';
+    font-weight: bold;
+    font-size: var(--textSize);
+}
+
+.CardNumber.bottom {
+    justify-content: flex-end;
+}
+
+.CardSymbol {
+    display: flex;
+    width: 100%;
+    height: calc(100% - 70px);
+    justify-content: center;
+    align-items: center;
+}
+
+.CardSymbol svg {
+    --svgSize: 70%
+    height: var(var(--svgSize));
+    width: var(--svgSize);
+}
