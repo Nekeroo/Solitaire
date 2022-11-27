@@ -9,5 +9,7 @@ export interface CardProps {
     */
     // symbol: "heart" | "tile" | "clover" | "pike",
     symbol: string,
-    number: number
+    number: number,
+    isVisible: boolean,
+    style?: any
 }

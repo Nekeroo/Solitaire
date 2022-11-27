@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { CardProps } from "../../types/Card.interface";
 import Pike from "../../components/svg/pike";
 import Tile from "../../components/svg/tile";
@@ -36,20 +37,31 @@ const Card = (CardProps : CardProps) => {
 
     return (
         <div
-            className={`${styles.Card} Card`}
+            style={CardProps.style}
+            className={`${styles.Card}`}
             onDragOver={(event) => event.preventDefault()}
             draggable
         >
-            <div>
-                <div className={`${styles.CardNumber} top`} style={{color: CardProps.color === 'red' ? '#EF5050' : '#2F3A58'}}>{getDisplayNumber()}</div>
-                <div className={styles.CardSymbol}>{
-                    CardProps.symbol === 'pike' ? <Pike /> : 
-                        CardProps.symbol === 'tile' ? <Tile /> :
-                            CardProps.symbol === 'clover' ? <Clover /> :
-                                CardProps.symbol === 'heart' ? <Heart /> : null
-                }</div>
-                <div className={`${styles.CardNumber} ${styles.bottom}`} style={{color: CardProps.color === 'red' ? '#EF5050' : '#2F3A58'}}>{getDisplayNumber()}</div>
-            </div>
+            {
+                !CardProps.isVisible ?
+                    (
+                        <div className={styles.CardBackFace}/>
+                    )
+                :
+                    (
+                        <div className={styles.CardFrontFace}>
+                            <div className={`${styles.CardNumber} top`} style={{color: CardProps.color === 'red' ? '#EF5050' : '#2F3A58'}}>{getDisplayNumber()}</div>
+                            <div className={styles.CardSymbol}>{
+                                CardProps.symbol === 'pike' ? <Pike /> : 
+                                    CardProps.symbol === 'tile' ? <Tile /> :
+                                        CardProps.symbol === 'clover' ? <Clover /> :
+                                            CardProps.symbol === 'heart' ? <Heart /> : null
+                            }</div>
+                            <div className={`${styles.CardNumber} ${styles.bottom}`} style={{color: CardProps.color === 'red' ? '#EF5050' : '#2F3A58'}}>{getDisplayNumber()}</div>
+                        </div>
+                    )
+            }
+            
         </div>
     )
 };
