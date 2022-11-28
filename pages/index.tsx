@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Board from '../components/board/board';
 import Card from '../components/card/Card';
 import Stack from '../components/stack/Stack';
 import { CardProps } from '../types/Card.interface';
@@ -80,96 +81,100 @@ export default function Home() {
     setCards(res);
   });
 
+  // return (
+  //   <div style={{
+  //     width: '100%',
+  //     height: '100%',
+  //     display: 'flex'
+  //   }}>
+  //     <div style={{
+  //       width: '25%',
+  //       display: 'grid',
+  //       gridTemplateColumns: 'repeat(3, 1fr)'
+  //     }}>
+  //       <Stack
+  //         style={{
+  //           display: 'flex',
+  //           flexDirection: 'column',
+  //         }}
+
+  //         stackType='pile'
+
+  //         index='1'
+
+  //         cardsList={[
+  //           {number: 4, color: 'black', symbol: 'pike', isVisible: true},
+  //           {number: 3, color: 'red', symbol: 'tile', isVisible: true},
+  //           {number: 2, color: 'black', symbol: 'clover', isVisible: true},
+  //           {number: 1, color: 'red', symbol: 'heart', isVisible: true}
+  //         ]}>
+  //       </Stack>
+
+  //       <Stack
+  //         style={{
+  //           display: 'flex',
+  //           flexDirection: 'column',
+  //         }}
+
+  //         stackType='pile'
+
+  //         index='2'
+
+  //         cardsList={[
+  //           {number: 13, color: 'black', symbol: 'pike', isVisible: true},
+  //           {number: 12, color: 'red', symbol: 'tile', isVisible: true},
+  //           {number: 11, color: 'black', symbol: 'clover', isVisible: true},
+  //           {number: 10, color: 'red', symbol: 'heart', isVisible: true},
+  //           {number: 9, color: 'black', symbol: 'clover', isVisible: true},
+  //           {number: 8, color: 'red', symbol: 'heart', isVisible: true},
+  //           {number: 7, color: 'black', symbol: 'pike', isVisible: true}
+  //         ]}>
+  //       </Stack>
+
+  //       <Stack
+  //         style={{
+  //           display: 'flex',
+  //           flexDirection: 'column',
+  //         }}
+
+  //         stackType='pile'
+
+  //         index='3'
+
+  //         cardsList={[
+  //           {number: 6, color: 'black', symbol: 'pike', isVisible: true},
+  //           {number: 5, color: 'red', symbol: 'tile', isVisible: true}
+  //         ]}>
+  //       </Stack>
+  //     </div>
+  //     <div style={{
+  //       width: '75%',
+  //       height: '100%',
+  //       display: 'grid',
+  //       gridTemplateColumns: 'repeat(13, 1fr)',
+  //       gridTemplateRows: 'repeat(4, 1fr)',
+  //       gridGap: '1rem',
+  //       backgroundColor: '#2b2b3c'
+  //     }}>{
+  //       cards.map((card, index) => {
+  //         return (
+  //           <div
+  //             onDragEnd={(e: object) => dragEnd(e, card)}
+  //             onDrop={(e: any) => onDrop(e, card)}
+  //           >
+  //             <Card key={index} {...card} />
+  //           </div>
+  //         )
+  //       })
+
+  //       // [...Array(52)].map((_, index) => {
+  //       //   return (<Card key={index} number={index} symbol={'heart'} color={'red'} />)
+  //       // })
+  //     }</div>      
+  //   </div>
+  // );
+
   return (
-    <div style={{
-      width: '100%',
-      height: '100%',
-      display: 'flex'
-    }}>
-      <div style={{
-        width: '25%',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)'
-      }}>
-        <Stack
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-
-          stackType='pile'
-
-          index='1'
-
-          cardsList={[
-            {number: 4, color: 'black', symbol: 'pike', isVisible: true},
-            {number: 3, color: 'red', symbol: 'tile', isVisible: true},
-            {number: 2, color: 'black', symbol: 'clover', isVisible: true},
-            {number: 1, color: 'red', symbol: 'heart', isVisible: true}
-          ]}>
-        </Stack>
-
-        <Stack
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-
-          stackType='pile'
-
-          index='2'
-
-          cardsList={[
-            {number: 13, color: 'black', symbol: 'pike', isVisible: true},
-            {number: 12, color: 'red', symbol: 'tile', isVisible: true},
-            {number: 11, color: 'black', symbol: 'clover', isVisible: true},
-            {number: 10, color: 'red', symbol: 'heart', isVisible: true},
-            {number: 9, color: 'black', symbol: 'clover', isVisible: true},
-            {number: 8, color: 'red', symbol: 'heart', isVisible: true},
-            {number: 7, color: 'black', symbol: 'pike', isVisible: true}
-          ]}>
-        </Stack>
-
-        <Stack
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-
-          stackType='pile'
-
-          index='3'
-
-          cardsList={[
-            {number: 6, color: 'black', symbol: 'pike', isVisible: true},
-            {number: 5, color: 'red', symbol: 'tile', isVisible: true}
-          ]}>
-        </Stack>
-      </div>
-      <div style={{
-        width: '75%',
-        height: '100%',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(13, 1fr)',
-        gridTemplateRows: 'repeat(4, 1fr)',
-        gridGap: '1rem',
-        backgroundColor: '#2b2b3c'
-      }}>{
-        cards.map((card, index) => {
-          return (
-            <div
-              onDragEnd={(e: object) => dragEnd(e, card)}
-              onDrop={(e: any) => onDrop(e, card)}
-            >
-              <Card key={index} {...card} />
-            </div>
-          )
-        })
-
-        // [...Array(52)].map((_, index) => {
-        //   return (<Card key={index} number={index} symbol={'heart'} color={'red'} />)
-        // })
-      }</div>      
-    </div>
+    <Board/>
   );
 }

@@ -55,7 +55,7 @@ const Stack  = (props : any) => {
                 marginLeft: '20px'
             }}
         >
-            <p>{props.stackType}</p>
+            <p>{props.stackType} {props.index}</p>
             <div
                 style={{
                     position: 'relative'
