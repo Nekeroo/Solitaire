@@ -35,6 +35,21 @@ const Card = (CardProps : CardProps) => {
         console.log(CardProps);
     }
 
+    const getSymbolSVG = () : JSX.Element => {
+        switch (CardProps.symbol) {
+            case 'pike':
+                return <Pike/>;
+            case 'tile':
+                return <Tile/>;
+            case 'clover':
+                return <Clover/>;
+            case 'heart':
+                return <Heart/>
+            default:
+                return <div/>
+        }
+    }
+
     return (
         <div
             style={CardProps.style}
@@ -50,13 +65,11 @@ const Card = (CardProps : CardProps) => {
                 :
                     (
                         <div className={styles.CardFrontFace}>
-                            <div className={`${styles.CardNumber} top`} style={{color: CardProps.color === 'red' ? '#EF5050' : '#2F3A58'}}>{getDisplayNumber()}</div>
-                            <div className={styles.CardSymbol}>{
-                                CardProps.symbol === 'pike' ? <Pike /> : 
-                                    CardProps.symbol === 'tile' ? <Tile /> :
-                                        CardProps.symbol === 'clover' ? <Clover /> :
-                                            CardProps.symbol === 'heart' ? <Heart /> : null
-                            }</div>
+                            <div className={`${styles.CardNumber} ${styles.top}`} style={{color: CardProps.color === 'red' ? '#EF5050' : '#2F3A58'}}>
+                                {getDisplayNumber()}
+                                {getSymbolSVG()}
+                            </div>
+                            <div className={styles.CardSymbol}>{getSymbolSVG()}</div>
                             <div className={`${styles.CardNumber} ${styles.bottom}`} style={{color: CardProps.color === 'red' ? '#EF5050' : '#2F3A58'}}>{getDisplayNumber()}</div>
                         </div>
                     )

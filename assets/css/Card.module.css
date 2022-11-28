@@ -96,8 +96,20 @@
     align-items: center;
 }
 
-.CardSymbol svg {
-    --svgSize: 70%
-    height: var(var(--svgSize));
+.CardSymbol svg,
+.top svg {
+    --svgSize: 80%;
+    height: var(--svgSize);
     width: var(--svgSize);
+}
+
+.top svg {
+    width: fit-content;
+}
+
+.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px;
 }
