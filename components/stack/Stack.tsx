@@ -5,8 +5,6 @@ import Card from "../card/Card";
 
 const Stack  = forwardRef((props : any, ref : any) => {
     const [cardsList, setCardsList] = useState<CardProps[]>(props.cardsList);
-    const [carteDeplace, setCarteDeplace] = useState<CardProps | null>(null);
-    const [carteReceptacle, setCarteReceptacle] = useState<CardProps | null>(null);
 
     /* Récupérer la carte qui est en train d'être déplacée */
     const dragEnd = (event : any, card : CardProps) => {
@@ -33,6 +31,8 @@ const Stack  = forwardRef((props : any, ref : any) => {
     useImperativeHandle(ref, () => ({
         /* Permet de savoir si on peut déposer la carte sur la carte sur laquelle on vient de déposer la carte */
         canPlaceCard(carteDeplace : CardProps) : boolean {
+            if (!carteDeplace.isVisible) return false;
+
             if (cardsList.length === 0) {
                 if (carteDeplace.number === 13) return true;
             }
@@ -51,7 +51,7 @@ const Stack  = forwardRef((props : any, ref : any) => {
         removeCard(cardToRemove : CardProps) {
             let newCardList = [...cardsList];
             newCardList.splice(cardsList.indexOf(cardToRemove), 1);
-            
+
             /* Retourner la dernière carte de la pile */
             if (newCardList.length > 0)
                 newCardList[newCardList.length - 1].isVisible = true;
@@ -65,21 +65,6 @@ const Stack  = forwardRef((props : any, ref : any) => {
 
         getIndex() : number {return props.index}
     }));
-
-    useEffect(() => {
-        if (!carteDeplace || !carteReceptacle) return;
-        
-        if (!carteReceptacle.isVisible) {
-            console.log('Impossible de déplacer la carte, la destination n\'est pas visible');
-        }
-        else {
-            console.log(carteDeplace, carteReceptacle);
-            // console.log(`Il est ${canPlaceCard(carteDeplace, carteReceptacle) ? 'possible' : 'impossible'} de déplacer le ${carteDeplace.number} de ${carteDeplace.symbol} sur le ${carteReceptacle.number} de ${carteReceptacle.symbol}`);
-        }
-
-        setCarteDeplace(null);
-        setCarteReceptacle(null);
-    }, [carteDeplace, carteReceptacle]);
 
     return (
         <div

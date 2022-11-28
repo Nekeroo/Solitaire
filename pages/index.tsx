@@ -31,6 +31,8 @@ export default function Home() {
 
   /* Permet de savoir si on peut déposer la carte sur la carte sur laquelle on vient de déposer la carte */
   const canPlaceCard = (carteDeplace : CardProps, carteReceptacle : CardProps) : boolean => {
+    if (!carteDeplace.isVisible) return false;
+    
     if (
       carteReceptacle.color != carteDeplace.color &&
       carteReceptacle.number == carteDeplace.number + 1
