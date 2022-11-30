@@ -1,4 +1,6 @@
 import { createRef, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from "react-redux";
+import { setStacks as SSR } from '../../store/StackStore';
 import { StackProps } from '../../types/Stack.interface';
 import { CardProps } from '../../types/Card.interface';
 import Stack from '../stack/Stack';
@@ -10,9 +12,14 @@ const Board = () => {
     const [dropSourceInfo, setDropSourceInfo] = useState<{stackIndex: number, card: CardProps} | null>(null);
     const [dropTargetInfo, setDropTargetInfo] = useState<{stackIndex: number, card: CardProps} | null>(null);
 
+    const stacksRedux = useSelector((state: any) => state.stack);
+    const dispatch = useDispatch();
+
     /* Init */
     useEffect(() => {
         if (initOK) return;
+
+        dispatch(SSR.setStacks([{type: 'normal', cardsList: [], index: 0}]));
 
         let numCardList = Array.from({length: 13}, (_, i) => i + 1);
         let symbolList = [{symbol: 'heart', color: 'red'}, {symbol: 'tile', color: 'red'}, {symbol: 'clover', color: 'black'}, {symbol: 'pike', color: 'black'}];

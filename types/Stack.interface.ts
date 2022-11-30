@@ -1,7 +1,7 @@
 import { CardProps } from "./Card.interface";
 
 export interface StackProps {
-    /* pile? | ace */
+    /* pioche | pile | ace */
     stackType? : string,
     cardsList : CardProps[],
     index? : number,
