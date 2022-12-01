@@ -4,26 +4,29 @@ const StacksStore = createSlice({
     name: 'stacks',
     initialState: [] as any,
     reducers: {
-        addCardToStack: (state, action) => {
+        /*
+            action.payload = {
+                targetStackIndex: number,
+                sourceStackIndex: number,
+                card: CardProps
+            }
+        */
+        transferCardsToStack: (state, {payload: {card, sourceStackIndex, targetStackIndex}}) => {
             if (
-                action.payload.stackIndex === null ||
-                action.payload.card === null
+                !card || sourceStackIndex == undefined || targetStackIndex == undefined
             ) return;
 
-            state[action.payload.stackIndex].cardsList.push(action.payload.card);
-        },
+            let indexCard = state[sourceStackIndex].cardsList.findIndex((c) => c.number === card.number && c.color === card.color && c.symbol === card.symbol);
+            let countCard = state[sourceStackIndex].cardsList.length - indexCard;
 
-        removeCardFromStack: (state, action) => {
-            if (
-                action.payload.stackIndex === null ||
-                action.payload.card === null
-            ) return;
+            let cardsToMove = state[sourceStackIndex].cardsList.slice(indexCard, indexCard + countCard);
 
-            let cardIndex = state[action.payload.stackIndex].cardsList.indexOf(action.payload.card);
+            state[targetStackIndex].cardsList.push(...cardsToMove);
+            state[sourceStackIndex].cardsList.splice(indexCard, countCard);
 
-            state[action.payload.stackIndex].cardsList.splice(cardIndex, 1);
-
-            state[action.payload.stackIndex].cardsList[state[action.payload.stackIndex].cardsList.length - 1].isVisible = true;
+            if (state[sourceStackIndex].cardsList.length > 0) {
+                state[sourceStackIndex].cardsList[state[sourceStackIndex].cardsList.length - 1].isVisible = true;
+            }
         },
 
         setStacks: (state, action) => {
@@ -33,8 +36,7 @@ const StacksStore = createSlice({
 });
 
 export const {
-    addCardToStack,
-    removeCardFromStack,
+    transferCardsToStack,
     setStacks
 } = StacksStore.actions;
 

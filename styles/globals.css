@@ -26,9 +26,9 @@ a {
 }
 
 .board {
-  width: 1000px;
+  width: 100%;
   aspect-ratio: 2 / 1;
-  background-color: #34a249;
+  background-color: #4ca75d;
   display: flex;
   justify-content: space-between;
 }

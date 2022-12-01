@@ -38,7 +38,7 @@ const Stack  = (props : any) => {
                                 top: `${index * 45}px`,
                                 left: '0px',
                                 height: '182px',
-                                boxShadow: '0px -2px 1px 0px #00000029'
+                                boxShadow: '0px 2px 1px 0px #00000029'
                             }}
                         />
                     </div>

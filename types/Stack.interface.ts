@@ -5,5 +5,6 @@ export interface StackProps {
     stackType? : string,
     cardsList : CardProps[],
     index? : number,
-    style? : any
+    style? : any,
+    stackSymbol? : string
 };
