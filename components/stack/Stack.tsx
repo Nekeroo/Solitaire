@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import { StackProps } from "../../types/Stack.interface";
+import { StackType } from "../../types/Stack.interface";
 import { CardProps } from "../../types/Card.interface";
 import Card from "../card/Card";
 
@@ -69,7 +69,7 @@ const Stack  = forwardRef((props : any, ref : any) => {
     return (
         <div
             style={{
-                marginLeft: '20px'
+                height: '100%'
             }}
             ref={ref}
         >
@@ -91,7 +91,7 @@ const Stack  = forwardRef((props : any, ref : any) => {
                             {...card}
                             style={{
                                 position: 'absolute',
-                                top: `${index * 55}px`,
+                                top: `${index * 45}px`,
                                 left: '0px',
                                 height: '182px',
                                 boxShadow: '0px -2px 1px 0px #00000029'

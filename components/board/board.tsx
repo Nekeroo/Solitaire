@@ -1,14 +1,23 @@
 import { createRef, useEffect, useState } from 'react';
-import { StackProps } from '../../types/Stack.interface';
+import { useSelector, useDispatch } from 'react-redux';
+import { setStacks as setStacksR } from '../../store/StackStore';
+import { StackType } from '../../types/Stack.interface';
 import { CardProps } from '../../types/Card.interface';
 import Stack from '../stack/Stack';
 
 const Board = () => {
     const [initOK, setInitOK] = useState<boolean>(false);
-    const [stacks, setStacks] = useState<StackProps[]>([]);
+    const [stacks, setStacks] = useState<StackType[]>([]);
     const [stacksRefs, setStacksRefs] = useState<React.RefObject<HTMLDivElement>[]>([]);
     const [dropSourceInfo, setDropSourceInfo] = useState<{stackIndex: number, card: CardProps} | null>(null);
     const [dropTargetInfo, setDropTargetInfo] = useState<{stackIndex: number, card: CardProps} | null>(null);
+
+    const dispatch = useDispatch();
+    const stacksRedux = useSelector((state: any) => state.stacks);
+
+    useEffect(() => {
+        console.log(stacksRedux);
+    }, [stacksRedux]);
 
     /* Init */
     useEffect(() => {
@@ -30,7 +39,7 @@ const Board = () => {
             })
         });
 
-        let stacksList : StackProps[] = [];
+        let stacksList : StackType[] = [];
 
         for (let i = 0; i < 7; i++) {
             let stackCardList : CardProps[] = [];
@@ -39,7 +48,7 @@ const Board = () => {
                 let randomCardIndex = Math.round(Math.random() * (cardsList.length - 1));
                 let randomCard = cardsList[randomCardIndex];
 
-                if (j != i) {
+                if (j != i) {   
                     randomCard.isVisible = false;
                 }
 
@@ -66,6 +75,7 @@ const Board = () => {
         document.addEventListener('onClickCard', (event: any) => {onClickCardHandler(event)});
 
         setStacks(stacksList);
+        // dispatch(setStacksR([...stacksList]));
         setInitOK(true);
     });
 
@@ -110,13 +120,15 @@ const Board = () => {
     }, [dropSourceInfo, dropTargetInfo]);
 
     return (
-        <div className='board'>{
-            stacks.map((stack, index) => {
-                return (
-                    <Stack {...stack} ref={stacksRefs[index]}></Stack>
-                );
-            })
-        }</div>
+        <div className='board'>
+            <div style={{width: '100%', display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)'}}>{
+                stacks.map((stack, index) => {
+                    return (
+                        <Stack {...stack} ref={stacksRefs[index]}></Stack>
+                    );
+                })
+            }</div>
+        </div>
     );
 };
 

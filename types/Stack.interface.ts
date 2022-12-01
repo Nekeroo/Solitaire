@@ -1,6 +1,6 @@
 import { CardProps } from "./Card.interface";
 
-export interface StackProps {
+export interface StackType {
     /* pile? | ace */
     stackType? : string,
     cardsList : CardProps[],
