@@ -12,14 +12,12 @@ const Board = () => {
     const [dropSourceInfo, setDropSourceInfo] = useState<{stackIndex: number, card: CardProps} | null>(null);
     const [dropTargetInfo, setDropTargetInfo] = useState<{stackIndex: number, card: CardProps} | null>(null);
 
-    const stacksRedux = useSelector((state: any) => state.stack);
+    const stacksRedux = useSelector((state: any) => state.stacks);
     const dispatch = useDispatch();
 
     /* Init */
     useEffect(() => {
         if (initOK) return;
-
-        dispatch(SSR.setStacks([{type: 'normal', cardsList: [], index: 0}]));
 
         let numCardList = Array.from({length: 13}, (_, i) => i + 1);
         let symbolList = [{symbol: 'heart', color: 'red'}, {symbol: 'tile', color: 'red'}, {symbol: 'clover', color: 'black'}, {symbol: 'pike', color: 'black'}];
@@ -28,12 +26,12 @@ const Board = () => {
         
         symbolList.forEach(({symbol, color}) => {
             numCardList.forEach((number) => {
-            cardsList.push({
-                number: number,
-                symbol: symbol,
-                color: color,
-                isVisible: true
-            });
+                cardsList.push({
+                    number: number,
+                    symbol: symbol,
+                    color: color,
+                    isVisible: true
+                });
             })
         });
 
@@ -74,8 +72,10 @@ const Board = () => {
 
         setStacks(stacksList);
         // dispatch(setStacksR([...stacksList]));
+        console.log(stacksRedux);
+        dispatch(SSR({type: 'normal', cardsList: [], index: 0}));
         setInitOK(true);
-    });
+    }, [initOK]);
 
     const onDragHandler = (event : any) => {
         // console.log('onDragHandler');
