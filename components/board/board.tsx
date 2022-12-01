@@ -1,29 +1,33 @@
-import { createRef, useEffect, useState } from 'react';
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setStacks as SSR } from '../../store/StackStore';
-import { StackProps } from '../../types/Stack.interface';
-import { CardProps } from '../../types/Card.interface';
-import Stack from '../stack/Stack';
+import Stack from "../stack/Stack";
+import { setStacks } from "../../store/StackStore";
+import { CardProps } from "../../types/Card.interface";
+import { StackProps } from "../../types/Stack.interface";
+import { resetDroppedCard, resetTargetStack } from "../../store/BoardStore";
+import { addCardToStack, removeCardFromStack } from "../../store/StackStore";
 
 const Board = () => {
-    const [initOK, setInitOK] = useState<boolean>(false);
-    const [stacks, setStacks] = useState<StackType[]>([]);
-    const [stacksRefs, setStacksRefs] = useState<React.RefObject<HTMLDivElement>[]>([]);
-    const [dropSourceInfo, setDropSourceInfo] = useState<{stackIndex: number, card: CardProps} | null>(null);
-    const [dropTargetInfo, setDropTargetInfo] = useState<{stackIndex: number, card: CardProps} | null>(null);
-
-    const stacksRedux = useSelector((state: any) => state.stacks);
     const dispatch = useDispatch();
+
+    const stacks = useSelector((state: any) => state.stacks);
+    const targetStack = useSelector((state : any) => state.board.targetStack);
+    const droppedCard = useSelector((state : any) => state.board.droppedCard);
 
     /* Init */
     useEffect(() => {
-        if (initOK) return;
+        console.log('init Board');
 
         let numCardList = Array.from({length: 13}, (_, i) => i + 1);
-        let symbolList = [{symbol: 'heart', color: 'red'}, {symbol: 'tile', color: 'red'}, {symbol: 'clover', color: 'black'}, {symbol: 'pike', color: 'black'}];
+        let symbolList = [
+            {symbol: 'heart', color: 'red'},
+            {symbol: 'tile', color: 'red'},
+            {symbol: 'clover', color: 'black'},
+            {symbol: 'pike', color: 'black'}
+        ];
 
-        let cardsList : CardProps[] = []
-        
+        let cardsList : CardProps[] = [];
+
         symbolList.forEach(({symbol, color}) => {
             numCardList.forEach((number) => {
                 cardsList.push({
@@ -35,11 +39,11 @@ const Board = () => {
             })
         });
 
-        let stacksList : StackType[] = [];
+        let stacksList = [];
 
         for (let i = 0; i < 7; i++) {
             let stackCardList : CardProps[] = [];
-            
+
             for (let j = 0; j < i + 1; j++) {
                 let randomCardIndex = Math.round(Math.random() * (cardsList.length - 1));
                 let randomCard = cardsList[randomCardIndex];
@@ -50,6 +54,7 @@ const Board = () => {
 
                 stackCardList.push(randomCard);
 
+                /* Retirer la carte de la liste des cartes */
                 cardsList.splice(randomCardIndex, 1);
             }
 
@@ -58,71 +63,59 @@ const Board = () => {
                 index: i,
                 cardsList: stackCardList
             });
-
-            let temp = stacksRefs;
-
-            temp.splice(1, 0, createRef());
-
-            setStacksRefs(temp);
         }
 
-        document.addEventListener('onDragSource', (event : any) => {onDragHandler(event)});
-        document.addEventListener('onDropTarget', (event : any) => {onDropHandler(event)});
-        document.addEventListener('onClickCard', (event: any) => {onClickCardHandler(event)});
+        dispatch(setStacks(stacksList));
 
-        setStacks(stacksList);
-        // dispatch(setStacksR([...stacksList]));
-        console.log(stacksRedux);
-        dispatch(SSR({type: 'normal', cardsList: [], index: 0}));
-        setInitOK(true);
-    }, [initOK]);
-
-    const onDragHandler = (event : any) => {
-        // console.log('onDragHandler');
-        // console.log(event.detail);
-        setDropSourceInfo(event.detail);
-    }
-
-    const onDropHandler = (event : any) => {
-        // console.log('onDropHandler');
-        // console.log(event.detail);
-        setDropTargetInfo(event.detail);
-    }
-
-    const onClickCardHandler = (event: any) => {
-        let possibleStacksIndex = [];
-
-        possibleStacksIndex = stacksRefs.filter((stackRef) => (stackRef.current as any).canPlaceCard(event.detail.card));
-
-        if (possibleStacksIndex.length > 0) {
-            (stacksRefs[(possibleStacksIndex[0].current as any).getIndex()].current as any).placeCard(event.detail.card);
-            (stacksRefs[event.detail.stackIndex].current as any).removeCard(event.detail.card);
-        }
-    }
+        console.log('fin init Board');
+    }, []);
 
     useEffect(() => {
-        if (!dropSourceInfo || !dropTargetInfo) return;
+        if (droppedCard.stackIndex == null || droppedCard.card == null) return;
 
-        let stackSource = stacksRefs[dropSourceInfo.stackIndex].current as any;
-        let stackTarget = stacksRefs[dropTargetInfo.stackIndex].current as any;
+        if (!targetStack.stackIndex == null) {
+            if (canPlaceCard()) {
+                dispatch(addCardToStack({stackIndex: targetStack.stackIndex, card: droppedCard.card}));
+                dispatch(removeCardFromStack({stackIndex: droppedCard.stackIndex, card: droppedCard.card}));
+            }
+        } else if (stacks.some((stack) => canPlaceCard(stack.index))) {
+            let targetStackIndex = stacks.findIndex((stack) => canPlaceCard(stack.index));
 
-        if (!stackSource || !stackTarget) return;
-
-        if (stackTarget.canPlaceCard(dropSourceInfo.card)) {
-            stackTarget.placeCard(dropSourceInfo.card);
-            stackSource.removeCard(dropSourceInfo.card);
+            dispatch(addCardToStack({stackIndex: targetStackIndex, card: droppedCard.card}));
+            dispatch(removeCardFromStack({stackIndex: droppedCard.stackIndex, card: droppedCard.card}));
         }
 
-        setDropSourceInfo(null);
-        setDropTargetInfo(null);
-    }, [dropSourceInfo, dropTargetInfo]);
+        dispatch(resetDroppedCard());
+        dispatch(resetTargetStack());
+    }, [targetStack, droppedCard]);
+
+    const canPlaceCard = (forcedStackIndex? : number) => {
+        if (
+            (targetStack.stackIndex == null && forcedStackIndex == null) ||
+            (droppedCard.stackIndex == null || droppedCard.card == null)
+        ) return false;
+
+        let targetStackIndex = targetStack.stackIndex ?? forcedStackIndex;
+        
+        /* La pile est vide et la carte à poser est le roi */
+        if (stacks.length === 0 && droppedCard.card.number === 13) return true;
+        else {
+            let targetCard = stacks[targetStackIndex].cardsList[stacks[targetStackIndex].cardsList.length - 1];
+        
+            if (targetCard.isVisible) {
+                if (targetCard.color !== droppedCard.card.color && targetCard.number === droppedCard.card.number + 1) return true;
+            }
+        }
+        
+        return false;
+    }
 
     return (
         <div className='board'>
             <div style={{width: '100%', display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)'}}>{
-                stacks.map((stack, index) => {
+                stacks.map((stack : any) => {
                     return (
-                        <Stack {...stack} ref={stacksRefs[index]}></Stack>
+                        <Stack index={stack.index} />
                     );
                 })
             }</div>

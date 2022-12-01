@@ -1,90 +1,34 @@
-import { forwardRef, useEffect, useImperativeHandle, useState } from "react";
-import { StackType } from "../../types/Stack.interface";
-import { CardProps } from "../../types/Card.interface";
+import { useEffect } from "react";
+import { shallowEqual, useDispatch, useSelector } from "react-redux";
 import Card from "../card/Card";
+import { setDroppedCard, setTargetStack } from "../../store/BoardStore";
 
-const Stack  = forwardRef((props : any, ref : any) => {
-    const [cardsList, setCardsList] = useState<CardProps[]>(props.cardsList);
+const Stack  = (props : any) => {
+    const dispatch = useDispatch();
 
-    /* Récupérer la carte qui est en train d'être déplacée */
-    const dragEnd = (event : any, card : CardProps) => {
-        // console.log(`Stack ${props.index}: dragEnd`);
-        // console.log(card);
-        // setCarteDeplace(card);
-        document.dispatchEvent(new CustomEvent('onDragSource', {detail: {stackIndex: props.index, card: card}}));
-    }
-
-    /* Récupérer la carte sur laquelle on vient de déposer la carte */
-    const onDrop = (event : any, card : CardProps) => {
-        event.preventDefault();
-        // console.log(`Stack ${props.index}: onDrop`);
-        // console.log(card);
-        // setCarteReceptacle(card);
-        document.dispatchEvent(new CustomEvent('onDropTarget', {detail: {stackIndex: props.index, card: card}}));
-    }
-
-    const onClickCard = (event : any, card : CardProps) => {
-        event.preventDefault();
-        document.dispatchEvent(new CustomEvent('onClickCard', {detail: {stackIndex: props.index, card: card}}));
-    }
-
-    useImperativeHandle(ref, () => ({
-        /* Permet de savoir si on peut déposer la carte sur la carte sur laquelle on vient de déposer la carte */
-        canPlaceCard(carteDeplace : CardProps) : boolean {
-            if (!carteDeplace.isVisible) return false;
-
-            if (cardsList.length === 0) {
-                if (carteDeplace.number === 13) return true;
-            }
-            else {
-                let carteReceptacle = cardsList[cardsList.length - 1];
-
-                if (
-                    carteReceptacle.color != carteDeplace.color &&
-                    carteReceptacle.number == carteDeplace.number + 1
-                ) return true;
-            }
-
-            return false;
-        },
-
-        removeCard(cardToRemove : CardProps) {
-            let newCardList = [...cardsList];
-            newCardList.splice(cardsList.indexOf(cardToRemove), 1);
-
-            /* Retourner la dernière carte de la pile */
-            if (newCardList.length > 0)
-                newCardList[newCardList.length - 1].isVisible = true;
-
-            setCardsList(newCardList);
-        },
-
-        placeCard(cardToPlace : CardProps) {
-            setCardsList([...cardsList, cardToPlace]);
-        },
-
-        getIndex() : number {return props.index}
-    }));
+    const stack = useSelector((state: any) => state.stacks.find((stack : any) => stack.index === props.index), shallowEqual);
 
     return (
         <div
             style={{
                 height: '100%'
             }}
-            ref={ref}
         >
-            <p>{props.stackType} {props.index}</p>
+            <p>{stack.index}</p>
             <div
                 style={{
                     position: 'relative'
                 }}
             >{
-            cardsList.map((card, index) => {
+            stack.cardsList?.map((card : any, index : number) => {
                 return (
                     <div
-                        onDragEnd={(e: object) => dragEnd(e, card)}
-                        onDrop={(event) => onDrop(event, card)}
-                        onClick={(event) => onClickCard(event, card)}
+                        // onDragEnd={(e: object) => dragEnd(e, card)}
+                        // onDrop={(event) => onDrop(event, card)}
+                        // onClick={(event) => onClickCard(event, card)}
+                        onDrop={(event) => dispatch(setTargetStack({stackIndex: stack.index}))}
+                        onDragEnd={(event) => dispatch(setDroppedCard({stackIndex: stack.index, card: card}))}
+                        onClick={(event) => dispatch(setDroppedCard({stackIndex: stack.index, card: card}))}
                     >
                         <Card
                             key={index}
@@ -102,7 +46,7 @@ const Stack  = forwardRef((props : any, ref : any) => {
               })
             }</div>
         </div>
-    )
-});
+    );
+};
 
 export default Stack;

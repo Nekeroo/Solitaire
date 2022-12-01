@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { CardProps } from "../../types/Card.interface";
 import Pike from "../../components/svg/pike";
 import Tile from "../../components/svg/tile";
@@ -22,18 +21,6 @@ const Card = (CardProps : CardProps) => {
                 return (CardProps.number).toString();
         }
     };
-
-    const dragEnd = (event : any) => {
-        // console.log(CardProps);
-        console.log('Card: dragEnd');
-        console.log(CardProps);
-    }
-
-    const drop = (event : any) => {
-        // console.log(CardProps);
-        console.log('Card: drop');
-        console.log(CardProps);
-    }
 
     const getSymbolSVG = () : JSX.Element => {
         switch (CardProps.symbol) {
