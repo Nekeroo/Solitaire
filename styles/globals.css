@@ -24,3 +24,11 @@ a {
     background: black;
   }
 }
+
+.board {
+  width: 1000px;
+  aspect-ratio: 2 / 1;
+  background-color: #34a249;
+  display: flex;
+  justify-content: space-between;
+}
