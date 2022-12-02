@@ -11,8 +11,8 @@ const Board = () => {
     const dispatch = useDispatch();
 
     const stacks = useSelector((state: any) => state.stacks);
-    const targetStack = useSelector((state : any) => state.board.targetStack);
-    const droppedCard = useSelector((state : any) => state.board.droppedCard);
+    const targetStackInfo = useSelector((state : any) => state.board.targetStack);
+    const droppedCardInfo = useSelector((state : any) => state.board.droppedCard);
 
     /* Init */
     useEffect(() => {
@@ -54,7 +54,8 @@ const Board = () => {
             let stackCardList : CardProps[] = [];
 
             for (let j = 0; j < i + 1; j++) {
-                let randomCardIndex = Math.round(Math.random() * (cardsList.length - 1));
+                // let randomCardIndex = Math.round(Math.random() * (cardsList.length - 1));
+                let randomCardIndex = 0;
                 let randomCard = cardsList[randomCardIndex];
 
                 if (j != i) {   
@@ -69,7 +70,7 @@ const Board = () => {
 
             stacksList.push({
                 stackType: 'pile',
-                index: (stacksList.length + 1),
+                index: stacksList.length,
                 cardsList: stackCardList
             });
         }
@@ -82,50 +83,53 @@ const Board = () => {
     }, []);
 
     useEffect(() => {
-        if (droppedCard.stackIndex == null || droppedCard.card == null) return;
+        if (droppedCardInfo.stackIndex == null || droppedCardInfo.card == null) return;
 
-        if (!(targetStack.stackIndex == null)) {
+        if (!(targetStackInfo.stackIndex == null)) {
             if (canPlaceCard()) {
-                dispatch(transferCardsToStack({targetStackIndex: targetStack.stackIndex, sourceStackIndex: droppedCard.stackIndex, card: droppedCard.card}));
+                dispatch(transferCardsToStack({targetStackIndex: targetStackInfo.stackIndex, sourceStackIndex: droppedCardInfo.stackIndex, card: droppedCardInfo.card}));
             }
         } else if (stacks.some((stack) => canPlaceCard(stack.index))) {
-            let targetStackIndex = stacks.findIndex((stack) => canPlaceCard(stack.index));
+            let targetStackIndex = stacks.find((stack) => canPlaceCard(stack.index)).index;
 
-            console.log('targetStackIndex', targetStackIndex);
-            console.log('droppedCard', droppedCard);
-
-            dispatch(transferCardsToStack({targetStackIndex: targetStackIndex, sourceStackIndex: droppedCard.stackIndex, card: droppedCard.card}));
+            dispatch(transferCardsToStack({targetStackIndex: targetStackIndex, sourceStackIndex: droppedCardInfo.stackIndex, card: droppedCardInfo.card}));
         }
 
         dispatch(resetDroppedCard());
         dispatch(resetTargetStack());
-    }, [targetStack, droppedCard]);
+    }, [targetStackInfo, droppedCardInfo]);
 
     const canPlaceCard = (forcedStackIndex? : number) => {
         if (
-            (targetStack.stackIndex == null && forcedStackIndex == null) ||
-            (droppedCard.stackIndex == null || droppedCard.card == null)
+            (targetStackInfo.stackIndex == null && forcedStackIndex == null) ||
+            (droppedCardInfo.stackIndex == null || droppedCardInfo.card == null)
         ) return false;
 
-        let targetStackIndex = targetStack.stackIndex ?? forcedStackIndex;
+        let targetStackIndex = targetStackInfo.stackIndex ?? forcedStackIndex;
+        let targetStack = stacks[targetStackIndex];
         
-        if (stacks[targetStackIndex].stackType === 'ace' && stacks[targetStackIndex].stackSymbol === droppedCard.card.symbol) {
-            if (stacks[targetStackIndex].cardsList.length === 0 && droppedCard.card.number === 1) return true;
-            else if (stacks[targetStackIndex].cardsList.number === (droppedCard.card.number - 1)) return true;
+        console.log(targetStack.cardsList.length, droppedCardInfo.card.number);
+
+        if (targetStack.stackType === 'ace' && targetStack.stackSymbol === droppedCardInfo.card.symbol) {
+            let targetStackCardListLength = targetStack.cardsList.length;            
+            
+            if (targetStackCardListLength === 0 && droppedCardInfo.card.number === 1) return true;
+            else if (
+                targetStackCardListLength > 0 &&
+                targetStack.cardsList[targetStackCardListLength - 1].number === (droppedCardInfo.card.number - 1)
+            ) return true;
         }
         
         /* La pile est vide et la carte à poser est le roi */
-        if (stacks.length === 0 && droppedCard.card.number === 13) {
-            if (stacks[targetStackIndex].stackType === 'ace' && droppedCard.card.number === 1) {
-                return true;
-            }
+        if (targetStack.cardsList.length === 0 && droppedCardInfo.card.number === 13) {            
+            return true;
         }
         else {
-            let targetCard = stacks[targetStackIndex].cardsList[stacks[targetStackIndex].cardsList.length - 1];
+            let targetCard = targetStack.cardsList[targetStack.cardsList.length - 1];
         
             /* Il est possible de ne pas trouver de carte dans le cas ou une pile serait vide  */
             if (targetCard?.isVisible) {
-                if (targetCard.color !== droppedCard.card.color && targetCard.number === droppedCard.card.number + 1) return true;
+                if (targetCard.color !== droppedCardInfo.card.color && targetCard.number === droppedCardInfo.card.number + 1) return true;
             }
         }
         
@@ -153,7 +157,7 @@ const Board = () => {
             <div style={{width: '50%', display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)'}}>{
                 renderPileStacks()
             }</div>
-            <div style={{width: '50%', display: 'grid', gridTemplateColumns: 1, gridTemplateRows: 'repeat(4, 1fr)'}}>{
+            <div style={{width: '50%', display: 'grid', gridTemplateColumns: 1, gridTemplateRows: 'repeat(4, 200px)'}}>{
                 renderAceStacks()
             }</div>
         </div>

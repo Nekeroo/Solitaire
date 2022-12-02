@@ -21,6 +21,8 @@ const StacksStore = createSlice({
 
             let cardsToMove = state[sourceStackIndex].cardsList.slice(indexCard, indexCard + countCard);
 
+            console.table({sourceStackIndex, targetStackIndex, cardsToMove});
+
             state[targetStackIndex].cardsList.push(...cardsToMove);
             state[sourceStackIndex].cardsList.splice(indexCard, countCard);
 

@@ -23,9 +23,6 @@ const Stack  = (props : any) => {
             stack.cardsList?.map((card : any, index : number) => {
                 return (
                     <div
-                        // onDragEnd={(e: object) => dragEnd(e, card)}
-                        // onDrop={(event) => onDrop(event, card)}
-                        // onClick={(event) => onClickCard(event, card)}
                         onDrop={(event) => dispatch(setTargetStack({stackIndex: stack.index}))}
                         onDragEnd={(event) => dispatch(setDroppedCard({stackIndex: stack.index, card: card}))}
                         onClick={(event) => dispatch(setDroppedCard({stackIndex: stack.index, card: card}))}
@@ -35,9 +32,9 @@ const Stack  = (props : any) => {
                             {...card}
                             style={{
                                 position: 'absolute',
-                                top: `${index * 45}px`,
+                                top: `${index * (stack.stackType === 'pile' ? 45 : 0)}px`,
                                 left: '0px',
-                                height: '182px',
+                                height: '150px',
                                 boxShadow: '0px 2px 1px 0px #00000029'
                             }}
                         />
