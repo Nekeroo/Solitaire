@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Stack from "../stack/Stack";
+import Pioche from "../pioche/Pioche";
 import { setStacks } from "../../store/StackStore";
 import { CardProps } from "../../types/Card.interface";
 import { StackProps } from "../../types/Stack.interface";
@@ -54,8 +55,8 @@ const Board = () => {
             let stackCardList : CardProps[] = [];
 
             for (let j = 0; j < i + 1; j++) {
-                // let randomCardIndex = Math.round(Math.random() * (cardsList.length - 1));
-                let randomCardIndex = 0;
+                let randomCardIndex = Math.round(Math.random() * (cardsList.length - 1));
+                // let randomCardIndex = 0;
                 let randomCard = cardsList[randomCardIndex];
 
                 if (j != i) {   
@@ -74,6 +75,15 @@ const Board = () => {
                 cardsList: stackCardList
             });
         }
+
+        stacksList.push({
+            stackType: 'pioche',
+            index: stacksList.length,
+            cardsList: cardsList.map((card) => {
+                card.isVisible = false;
+                return card;
+            })
+        });
 
         console.table(stacksList);
 
@@ -107,31 +117,45 @@ const Board = () => {
 
         let targetStackIndex = targetStackInfo.stackIndex ?? forcedStackIndex;
         let targetStack = stacks[targetStackIndex];
-        
-        console.log(targetStack.cardsList.length, droppedCardInfo.card.number);
+        let targetStackCardListLength = targetStack.cardsList.length;
+        let targetStackLastCard = targetStack.cardsList[targetStackCardListLength - 1] || {};
 
-        if (targetStack.stackType === 'ace' && targetStack.stackSymbol === droppedCardInfo.card.symbol) {
-            let targetStackCardListLength = targetStack.cardsList.length;            
-            
-            if (targetStackCardListLength === 0 && droppedCardInfo.card.number === 1) return true;
+        console.log(targetStack.stackType);
+
+        if (
+            targetStack.stackType === 'ace' &&
+            targetStack.stackSymbol === droppedCardInfo.card.symbol
+        ) {
+            if (droppedCardInfo.card.number === ((targetStackLastCard?.number || 0) + 1)) return true;
+        } else if (targetStack.stackType === 'pile') {
+            if (targetStackCardListLength === 0 && droppedCardInfo.card.number === 13) return true;
             else if (
-                targetStackCardListLength > 0 &&
-                targetStack.cardsList[targetStackCardListLength - 1].number === (droppedCardInfo.card.number - 1)
+                targetStackLastCard.isVisible &&
+                droppedCardInfo.card.number === (targetStackLastCard.number - 1) &&
+                droppedCardInfo.card.color !== targetStackLastCard.color
             ) return true;
         }
+
+        // if (targetStack.stackType === 'ace' && targetStack.stackSymbol === droppedCardInfo.card.symbol) {            
+        //     if (targetStackCardListLength === 0 && droppedCardInfo.card.number === 1) return true;
+        //     else if (
+        //         targetStackCardListLength > 0 &&
+        //         targetStack.cardsList[targetStackCardListLength - 1].number === (droppedCardInfo.card.number - 1)
+        //     ) return true;
+        // }
         
-        /* La pile est vide et la carte à poser est le roi */
-        if (targetStack.cardsList.length === 0 && droppedCardInfo.card.number === 13) {            
-            return true;
-        }
-        else {
-            let targetCard = targetStack.cardsList[targetStack.cardsList.length - 1];
+        // /* La pile est vide et la carte à poser est le roi */
+        // if (targetStack.cardsList.length === 0 && droppedCardInfo.card.number === 13) {            
+        //     return true;
+        // }
+        // else {
+        //     let targetCard = targetStack.cardsList[targetStack.cardsList.length - 1];
         
-            /* Il est possible de ne pas trouver de carte dans le cas ou une pile serait vide  */
-            if (targetCard?.isVisible) {
-                if (targetCard.color !== droppedCardInfo.card.color && targetCard.number === droppedCardInfo.card.number + 1) return true;
-            }
-        }
+        //     /* Il est possible de ne pas trouver de carte dans le cas ou une pile serait vide  */
+        //     if (targetCard?.isVisible) {
+        //         if (targetCard.color !== droppedCardInfo.card.color && targetCard.number === droppedCardInfo.card.number + 1) return true;
+        //     }
+        // }
         
         return false;
     }
@@ -152,12 +176,23 @@ const Board = () => {
         });
     }
 
+    const renderPiocheStack = () => {
+        return stacks.filter((stack) => stack.stackType === 'pioche').map((stack) => {
+            return (
+                <Pioche key={stack.index} index={stack.index} />
+            );
+        });
+    }
+
     return (
         <div className='board'>
-            <div style={{width: '50%', display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)'}}>{
+            <div style={{width: '20%'}}>{
+                renderPiocheStack()
+            }</div>
+            <div style={{width: '60%', display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)'}}>{
                 renderPileStacks()
             }</div>
-            <div style={{width: '50%', display: 'grid', gridTemplateColumns: 1, gridTemplateRows: 'repeat(4, 200px)'}}>{
+            <div style={{width: '20%', display: 'grid', gridTemplateColumns: 1, gridTemplateRows: 'repeat(4, 200px)'}}>{
                 renderAceStacks()
             }</div>
         </div>

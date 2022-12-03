@@ -21,7 +21,9 @@ const StacksStore = createSlice({
 
             let cardsToMove = state[sourceStackIndex].cardsList.slice(indexCard, indexCard + countCard);
 
-            console.table({sourceStackIndex, targetStackIndex, cardsToMove});
+            if (state[targetStackIndex].stackType === 'pioche') {
+                console.table(state[targetStackIndex].cardsList);
+            }
 
             state[targetStackIndex].cardsList.push(...cardsToMove);
             state[sourceStackIndex].cardsList.splice(indexCard, countCard);
@@ -29,6 +31,17 @@ const StacksStore = createSlice({
             if (state[sourceStackIndex].cardsList.length > 0) {
                 state[sourceStackIndex].cardsList[state[sourceStackIndex].cardsList.length - 1].isVisible = true;
             }
+        },
+        
+        turnCard: (state, action) => {
+            let stackIndex = action.payload.stackIndex;
+            let cardToTurn = action.payload.card;
+
+            if (stackIndex == undefined || !cardToTurn) return;
+
+            let card = state[stackIndex].cardsList.find((c) => c.number === cardToTurn.number && c.color === cardToTurn.color && c.symbol === cardToTurn.symbol);
+
+            card.isVisible = !card.isVisible;
         },
 
         setStacks: (state, action) => {
@@ -39,6 +52,7 @@ const StacksStore = createSlice({
 
 export const {
     transferCardsToStack,
+    turnCard,
     setStacks
 } = StacksStore.actions;
 
