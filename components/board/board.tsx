@@ -120,8 +120,6 @@ const Board = () => {
         let targetStackCardListLength = targetStack.cardsList.length;
         let targetStackLastCard = targetStack.cardsList[targetStackCardListLength - 1] || {};
 
-        console.log(targetStack.stackType);
-
         if (
             targetStack.stackType === 'ace' &&
             targetStack.stackSymbol === droppedCardInfo.card.symbol

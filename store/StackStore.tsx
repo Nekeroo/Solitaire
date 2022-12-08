@@ -17,18 +17,18 @@ const StacksStore = createSlice({
             ) return;
 
             let indexCard = state[sourceStackIndex].cardsList.findIndex((c) => c.number === card.number && c.color === card.color && c.symbol === card.symbol);
-            let countCard = state[sourceStackIndex].cardsList.length - indexCard;
+            let countCard = undefined;
+            
+            if (!(state[sourceStackIndex].stackType === 'pioche'))
+                countCard = state[sourceStackIndex].cardsList.length - indexCard;
+            else countCard = 1;
 
             let cardsToMove = state[sourceStackIndex].cardsList.slice(indexCard, indexCard + countCard);
-
-            if (state[targetStackIndex].stackType === 'pioche') {
-                console.table(state[targetStackIndex].cardsList);
-            }
 
             state[targetStackIndex].cardsList.push(...cardsToMove);
             state[sourceStackIndex].cardsList.splice(indexCard, countCard);
 
-            if (state[sourceStackIndex].cardsList.length > 0) {
+            if (state[sourceStackIndex].cardsList.length > 0 && state[sourceStackIndex].stackType !== 'pioche') {
                 state[sourceStackIndex].cardsList[state[sourceStackIndex].cardsList.length - 1].isVisible = true;
             }
         },
